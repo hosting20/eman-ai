@@ -1,0 +1,143 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif;
+  color: #221e1a;
+}
+
+input,
+textarea {
+  font-family: 'IBM Plex Sans Arabic', sans-serif;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #b3a99c;
+}
+
+/* Page root: cream base + two radial washes + faint 56px grid */
+.page-bg {
+  position: relative;
+  isolation: isolate; /* lets .grid-glow sit at z-index:-1 above the page background but below all content */
+  min-height: 100vh;
+  background-color: #fdf9f5;
+  background-image:
+    radial-gradient(ellipse 55% 38% at 88% 0%, rgba(150, 120, 230, 0.18), transparent 65%),
+    radial-gradient(ellipse 45% 32% at 0% 100%, rgba(140, 170, 230, 0.18), transparent 60%),
+    linear-gradient(rgba(180, 150, 120, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(180, 150, 120, 0.08) 1px, transparent 1px);
+  background-size:
+    100% 100%,
+    100% 100%,
+    56px 56px,
+    56px 56px;
+}
+
+/* Brighter copy of the grid, masked to a spotlight that follows the cursor */
+.grid-glow {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(109, 79, 196, 0.5) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(109, 79, 196, 0.5) 1px, transparent 1px);
+  background-size: 56px 56px;
+  -webkit-mask-image: radial-gradient(
+    260px circle at var(--gx, -999px) var(--gy, -999px),
+    black 0%,
+    rgba(0, 0, 0, 0.35) 55%,
+    transparent 75%
+  );
+  mask-image: radial-gradient(
+    260px circle at var(--gx, -999px) var(--gy, -999px),
+    black 0%,
+    rgba(0, 0, 0, 0.35) 55%,
+    transparent 75%
+  );
+}
+
+/* Scroll-reveal for the hero mock window: items fade/slide in, flow nodes
+   get a one-shot glowing accent border sweep. Delays staggered via --d. */
+.reveal-item,
+.reveal-node {
+  opacity: 0;
+}
+
+.reveal-node {
+  position: relative;
+  transform: translateY(12px);
+}
+
+.reveal-node::after {
+  content: '';
+  position: absolute;
+  inset: -1.5px;
+  border-radius: 12px;
+  border: 1.5px solid #5a3fae;
+  box-shadow:
+    0 0 16px rgba(90, 63, 174, 0.45),
+    inset 0 0 8px rgba(90, 63, 174, 0.12);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.mock-in .reveal-item {
+  animation: reveal-in 0.5s ease forwards;
+  animation-delay: var(--d, 0s);
+}
+
+.mock-in .reveal-node {
+  animation: reveal-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: var(--d, 0s);
+}
+
+.mock-in .reveal-node::after {
+  animation: node-glow 1.1s ease forwards;
+  animation-delay: calc(var(--d, 0s) + 0.3s);
+}
+
+@keyframes reveal-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes node-glow {
+  0% {
+    opacity: 0;
+  }
+  40% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal-item,
+  .reveal-node {
+    opacity: 1;
+    transform: none;
+    animation: none !important;
+  }
+  .reveal-node::after {
+    display: none;
+  }
+  .grid-glow {
+    display: none;
+  }
+}
